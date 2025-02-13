@@ -1,0 +1,56 @@
+sudo vim /etc/docker/daemon.json
+
+###insert
+
+{
+    "runtimes": {
+        "nvidia": {
+            "args": [],
+            "path": "nvidia-container-runtime"
+        }
+    },"default-runtime": "nvidia"
+}
+
+
+###"ESC" + ":" + "w" + "q"
+
+sudo systemctl restart docker
+
+sudo usermod -aG docker $USER
+
+newgrp docker
+
+wget --content-disposition https://ngc.nvidia.com/downloads/ngccli_arm64.zip && unzip ngccli_arm64.zip && chmod u+x ngc-cli/ngc
+
+find ngc-cli/ -type f -exec md5sum {} + | LC_ALL=C sort | md5sum -c ngc-cli.md5
+
+echo "export PATH=\"\$PATH:$(pwd)/ngc-cli\"" >> ~/.bash_profile && source ~/.bash_profile
+
+ngc config set
+
+ngc registry resource download-version nvidia/riva/riva_quickstart_arm64:2.18.0
+
+cd riva_quickstart_v2.18.0
+
+sudo bash riva_init.sh
+
+bash riva_start.sh
+
+##Container
+
+git clone https://github.com/dusty-nv/jetson-containers
+
+bash jetson-containers/install.sh
+
+
+##RUN
+#önce riva çalıştırılmalı ardınan farklı bir terminalde container çağrılmalı
+
+cd riva_quickstart_v2.18.0
+
+bash riva_start.sh
+
+#farklı bir terminalde;
+
+jetson-containers run --env HUGGINGFACE_TOKEN=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---   $(autotag nano_llm)   python3 -m nano_llm.agents.web_chat --api=mlc     --model meta-llama/Meta-Llama-3-8B-Instruct     --asr=riva --tts=piper
+
