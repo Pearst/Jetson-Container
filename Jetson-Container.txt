@@ -30,7 +30,7 @@ ngc config set
 
 ngc registry resource download-version nvidia/riva/riva_quickstart_arm64:2.18.0
 
-cd riva_quickstart_v2.18.0
+cd riva_quickstart_arm64_v2.18.0
 
 sudo bash riva_init.sh
 
